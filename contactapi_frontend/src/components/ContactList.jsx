@@ -6,7 +6,7 @@ import Contact from './Contact'
 const ContactList = ({data, currentPage, getAllContacts}) => {
   return (
     <main className=''>
-      { data?.content?.length === 0 && <div className='col-span-full'>No contacts. Add new Contact.</div> }
+      { data?.content?.length === 0 && <div className=''>No contacts. Add new Contact.</div> }
 
       <ul className=''>
         <li>
@@ -15,7 +15,7 @@ const ContactList = ({data, currentPage, getAllContacts}) => {
       </ul>
 
       { data?.content?.length > 0 && data?.totalPages > 1 && 
-        <div className='pagination col-span-full flex justify-center items-center'>
+        <div className=''>
           <a onClick={() => getAllContacts(currentPage - 1)} className={0 === currentPage ? 'pointer-events: none;' : ''} >&laquo;</a>
           { data && [...Array(data.totalPages).keys()].map((page, index) => 
             <a key={page} onClick={getAllContacts(page)} className={currentPage === page ? 'active' : ''}>{page + 1}</a>

@@ -31,7 +31,7 @@ function App() {
     <>
       <Header toggleModal={toggleModal} nbOfContacts={data.totalElements} />
       <main className="main">
-        <div className="container">
+        <div className="container columns-2 p-8 ">
           <Routes>
             <Route path="/" element={<Navigate to={'/contacts'} />} />
             <Route path="/contacts" element={<ContactList data={data} currentPage={currentPage} getAllContacts={getAllContacts} />} />

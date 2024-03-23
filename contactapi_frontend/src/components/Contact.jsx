@@ -3,41 +3,53 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { faCircle, faCircleNotch, faEnvelope, faMapMarkerAlt, faP, faPhone } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faCircleNotch, faEnvelope, faMapMarkerAlt, faP, faPhone, faBriefcase } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Contact = ({ contact }) => {
   return (
     <Link to={`/contacts/${contact?.id}`}>
-      <div class="max-w-sm w-full lg:max-w-full lg:flex">
-        <div class="border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
-          <div class="mb-8">
-            <div class="flex items-center">
-              <img class="w-10 h-10 rounded-full mr-4" src={contact?.photoUrl} alt={contact?.name} />
-              <div class="text-sm">
-                <p className="text-gray-900 leading-none">{contact?.name}</p>
-                <p class="text-gray-600">{contact?.title}</p>
-              </div>
-            </div>
-            <p class="text-gray-700 text-base"><FontAwesomeIcon icon={faEnvelope} />&nbsp; {contact?.email}</p>
-            <p class="text-gray-700 text-base"><FontAwesomeIcon icon={faMapMarkerAlt} />&nbsp; {contact?.address}</p>
-            <p class="text-gray-700 text-base"><FontAwesomeIcon icon={faPhone} />&nbsp; {contact?.phone}</p>
+      <div
+        className="flex flex-col rounded-lg bg-white text-black shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-300 md:max-w-xl md:flex-row p-5">
+        <img
+          className="h-96 w-full rounded-t-lg object-cover md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
+          src={contact?.photoUrl} alt={contact?.name} />
+        <div className="flex flex-col justify-start p-6">
+          <h5
+            className="mb-2 text-xl font-medium text-black">
+            {contact.name}
+          </h5>
+          <h4
+            className="mb-2 text-xl font-medium text-black">
+            <FontAwesomeIcon icon={faBriefcase} />&nbsp; {contact.title}
+          </h4>
+          <p className="mb-4 text-base text-black ">
+            <FontAwesomeIcon icon={faEnvelope} /> &nbsp; {contact?.email}
+          </p>
+          <p className="mb-4 text-base text-black">
+            <FontAwesomeIcon icon={faMapMarkerAlt} />&nbsp; {contact?.address}
+          </p>
+          <p className="mb-4 text-base text-black">
+            <FontAwesomeIcon icon={faPhone} />&nbsp; {contact?.phone}
+          </p>
+          <p className="text-xs text-black">
             {contact?.status === 'Active' ?
-              <span className="badge badge-primary flex items-center text-sm text-gray-600">
+              <span className="badge badge-primary flex items-center">
                 <FontAwesomeIcon icon={faCircle} />
                 &nbsp;{contact?.status}
               </span>
               :
-              <span className="badge badge-secondary flex items-center text-sm text-gray-600">
+              <span className="badge badge-secondary flex items-center">
                 <FontAwesomeIcon icon={faCircleNotch} spin />
                 &nbsp;{contact?.status}
               </span>
             }
-          </div>
+          </p>
         </div>
       </div>
-      {/* <div className="flex flex-col md:flex-row justify-between px-8 py-6 text-sm bg-gray-200 rounded-lg shadow hover:bg-gray" >
-        <div className="card m-4">
+      {/* <div className="flex flex-col md:flex-row justify-between p-8 text-sm w-full" >
+        <div className='container'>
+        <div className="card m-4 bg-gray-300">
           <div className='card-header'>
             <img src={contact?.photoUrl} alt={contact?.name} className='' />
           </div>
@@ -45,7 +57,7 @@ const Contact = ({ contact }) => {
             <p className='text-lg font-semibold'>{contact?.name}</p>
             <p className='text-sm text-gray-500'>{contact?.title}</p>
           </div>
-          <div className='card-footer bg-gray-100 py-2 px-4'>
+          <div className='card-footer'>
             <p className='flex items-center text-sm text-gray-600'> <FontAwesomeIcon icon={faEnvelope} />&nbsp; {contact?.email}</p>
             <p className='flex items-center text-sm text-gray-600'> <FontAwesomeIcon icon={faMapMarkerAlt} />&nbsp; {contact?.address}</p>
             <p className='flex items-center text-sm text-gray-600'> <FontAwesomeIcon icon={faPhone} />&nbsp; {contact?.phone}</p>
@@ -61,6 +73,7 @@ const Contact = ({ contact }) => {
               </span>
             }
           </div>
+        </div>
         </div>
       </div> */}
     </Link>
