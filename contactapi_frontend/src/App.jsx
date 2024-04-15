@@ -1,32 +1,20 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useRef, useState } from "react"
-import Contact from "./components/Contact"
 import Header from "./components/Header"
-import { getContacts } from "./api/ContactService";
+import { getContacts, saveContact, updateContact, updatePhoto } from "./api/ContactService";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ContactList from "./components/ContactList";
-import AddNewContact from "./components/AddNewContact";
+import ContactDetail from "./components/ContactDetail";
 
 function App() {
   const [data, setData] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
   const modalRef = useRef();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [title, setTitle] = useState('');
-  const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState('');
-  const [status, setStatus] = useState('');
-  const [photo, setPhoto] = useState('');
-
-  // Add onChange handlers to update state variables
-  const handleNameChange = (event) => setName(event.target.value);
-  const handleEmailChange = (event) => setEmail(event.target.value);
-  const handleTitleChange = (event) => setTitle(event.target.value);
-  const handleAddressChange = (event) => setAddress(event.target.value);
-  const handlePhoneChange = (event) => setPhone(event.target.value);
-  const handleStatusChange = (event) => setStatus(event.target.value);
-  const handlePhotoChange = (event) => setPhoto(event.target.value);
+  const fileRef = useRef();
+  const [values, setValues] = useState({
+    name: "", email:"", phone: "", address: "", title: "", status: "", 
+  });
+  const [file, setFile] = useState(undefined);
 
   const getAllContacts = async (page = 0, size = 10) => {
     try {
@@ -43,70 +31,98 @@ function App() {
     show ? modalRef.current.showModal() : modalRef.current.close();
   };
 
+  const onChange = (event) => {
+    setValues({...values, [event.target.name]: event.target.value});
+  };
+
+  const handleNewContact = async (event) => {
+    event.preventDefault();
+    try {
+      const {data} = await saveContact(values);
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      formData.append('id', data.id);
+      const {data: photoUrl} = await updatePhoto(formData);
+      toggleModal(false);
+      setFile(undefined);
+      fileRef.current.value = null;
+      setValues({name: "", email:"", phone: "", address: "", title: "", status: "", });
+      getAllContacts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateContact = () => {};
+  const updateImage = () => {};
+
   useEffect(() => {
     getAllContacts();
-  }, [])
+  }, []);
 
   return (
     <>
       <Header toggleModal={toggleModal} nbOfContacts={data.totalElements} />
-      {/* <AddNewContact isOpen={toggleModal} onClose={closeDialog} onSave={handleSaveContact} /> */}
       <main className="main">
         <div className="container columns-2 p-8 ">
           <Routes>
             <Route path="/" element={<Navigate to={'/contacts'} />} />
             <Route path="/contacts" element={<ContactList data={data} currentPage={currentPage} getAllContacts={getAllContacts} />} />
+            <Route path="/contacts/:id" element={<ContactDetail updateContact={updateContact} updateImage={updateImage} />} />
           </Routes>
         </div>
       </main>
 
       <dialog ref={modalRef} id="dialog" className="fixed z-10 inset-0 overflow-y-auto">
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="modal-overlay fixed inset-0 opacity-50"></div>
-    <div className="modal-container bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-      <div className="modal-header flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Add New Contact</h3>
-        <button onClick={() => toggleModal(false)} className="close-button text-gray-500 hover:text-gray-700 focus:outline-none">
-          X
-        </button>
-      </div>
-      <div className="modal-body space-y-4">
-        <div className="form-group">
-          <label htmlFor="name" className="block font-medium text-gray-700">Name:</label>
-          <input id="name" type="text" value={name} onChange={handleNameChange} className="input-field" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="email" className="block font-medium text-gray-700">Email:</label>
-          <input id="email" type="email" value={email} onChange={handleEmailChange} className="input-field" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="title" className="block font-medium text-gray-700">Title:</label>
-          <input id="title" type="text" value={title} onChange={handleTitleChange} className="input-field" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="address" className="block font-medium text-gray-700">Address:</label>
-          <input id="address" type="text" value={address} onChange={handleAddressChange} className="input-field" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="phone" className="block font-medium text-gray-700">Phone:</label>
-          <input id="phone" type="number" value={phone} onChange={handlePhoneChange} className="input-field" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="status" className="block font-medium text-gray-700">Status:</label>
-          <input id="status" type="text" value={status} onChange={handleStatusChange} readOnly className="input-field bg-gray-100 cursor-not-allowed" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="photo" className="block font-medium text-gray-700">Photo:</label>
-          <input id="photo" type="file" value={photo} onChange={handlePhotoChange} className="input-field" />
-        </div>
-      </div>
-      <div className="modal-footer flex justify-end space-x-2">
-        <button className="btn-primary">Save</button>
-        <button className="btn-secondary" onClick={() => toggleModal(false)}>Cancel</button>
-      </div>
-    </div>
-  </div>
-</dialog>
+        <form onSubmit={handleNewContact} className="flex items-center justify-center min-h-screen">
+          <div className="modal-container bg-white rounded-lg shadow-xl p-6 max-w-md w-full relative">
+            {/* Modal content */}
+            <div className="modal-header flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Add New Contact</h3>
+              <button onClick={() => toggleModal(false)} className="close-button text-black bg-sky-500 hover:bg-sky-700 px-4 py-2 rounded-lg">
+                X
+              </button>
+            </div>
+            <div className="modal-body space-y-4">
+              <div className="form-group">
+                <label htmlFor="name" className="block font-medium text-gray-700">Name:</label>
+                <input id="name" name="name" type="text" value={values.name} onChange={onChange} className="input-field border text-black border-gray-300 rounded-lg w-full py-2 px-3" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email" className="block font-medium text-gray-700">Email:</label>
+                <input id="email" name="email" type="email" value={values.email} onChange={onChange} className="peer input-field border border-gray-300 rounded-lg w-full py-2 px-3" />
+                <p className="mt-2 invisible peer-invalid:visible text-pink-600 text-sm">
+                  Please provide a valid email address.
+                </p>
+              </div>
+              <div className="form-group">
+                <label htmlFor="title" className="block font-medium text-gray-700">Title:</label>
+                <input id="title" name="title" type="text" value={values.title} onChange={onChange} className="input-field border border-gray-300 rounded-lg w-full py-2 px-3" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="address" className="block font-medium text-gray-700">Address:</label>
+                <input id="address" name="address" type="text" value={values.address} onChange={onChange} className="input-field border border-gray-300 rounded-lg w-full py-2 px-3" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="phone" className="block font-medium text-gray-700">Phone:</label>
+                <input id="phone" name="phone" type="number" value={values.phone} onChange={onChange} className="input-field border border-gray-300 rounded-lg w-full py-2 px-3" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="status" className="block font-medium text-gray-700">Status:</label>
+                <input id="status" name="status" type="text" value={values.status} onChange={onChange} className="input-field border border-gray-300 rounded-lg w-full py-2 px-3" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="photo" className="block font-medium text-gray-700">Photo:</label>
+                <input id="photo" name="photo" ref={fileRef} type="file" onChange={(event) => setFile(event.target.files[0])} className="input-field" />
+              </div>
+            </div>
+            <div className="modal-footer flex justify-end space-x-2 m-3">
+              <button type="button" className="bg-red-300 hover:bg-red-500 py-2 px-4 mr-40" onClick={() => toggleModal(false)}>Cancel</button>
+              <button type="submit" className="bg-sky-500 hover:bg-sky-700">Save</button>
+            </div>
+          </div>
+        </form>
+      </dialog>
 
 
     </>

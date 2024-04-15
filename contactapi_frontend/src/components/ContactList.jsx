@@ -9,7 +9,7 @@ const ContactList = ({data, currentPage, getAllContacts}) => {
       { data?.content?.length === 0 && <div className=''>No contacts. Add new Contact.</div> }
 
       <ul className=''>
-        <li>
+        <li className='pb-5'>
           { data?.content?.length > 0 && data.content.map(contact => <Contact contact={contact} key={contact.id} />) }
         </li>
       </ul>

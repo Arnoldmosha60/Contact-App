@@ -15,7 +15,7 @@ const Header = ({ toggleModal, nbOfContacts}) => {
             </div>
           </div>
           <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>
-            <button onClick={() => toggleModal(true)} className='relative btn btn-primary p-2 text-gray-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800'>
+            <button onClick={() => toggleModal(true)} className='relative btn btn-primary p-2 text-black hover:text-white bg-sky-500 hover:bg-sky-700 '>
               <FontAwesomeIcon icon={faPlus} className="" /> New Contact
             </button>
           </div>
