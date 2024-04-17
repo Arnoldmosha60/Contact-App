@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 import { getContact, updatePhoto } from '../api/ContactService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faImage } from '@fortawesome/free-solid-svg-icons';
+import { toastError, toastSuccess } from '../api/ToastService';
 
 const ContactDetail = ({ updateContact, updateImage }) => {
   const inputRef = useRef();
@@ -19,8 +20,10 @@ const ContactDetail = ({ updateContact, updateImage }) => {
       const { data } = await getContact(id);
       setContact(data);
       console.log(data);
+      // toastSuccess("Fetched Contacts");
     } catch (error) {
       console.log(error);
+      toastError(error.message);
     }
   };
 
@@ -28,15 +31,17 @@ const ContactDetail = ({ updateContact, updateImage }) => {
     inputRef.current.click();
   };
 
-  const updateContactPhoto = async (file) => {
+  const updatePhoto = async (file) => {
     try {
       const formData = new FormData();
       formData.append("file", file, file.name);
       formData.append('id', id);
       await updateImage(formData);
       setContact((prev) => ({ ...prev, photoUrl: `${prev.photoUrl}?updated_at=${new Date().getTime()}` }));
+      toastSuccess("Photo updated");
     } catch (error) {
       console.log(error);
+      toastError(error.message);
     }
   };
 
@@ -46,8 +51,9 @@ const ContactDetail = ({ updateContact, updateImage }) => {
 
   const onUpdateContact = async (event) => {
     event.preventDefault();
-    await updateContactPhoto(contact);
+    await updateContact(contact);
     fetchContact(id);
+    toastSuccess('Contact updated');
   };
 
   useEffect(() => {
@@ -105,7 +111,7 @@ const ContactDetail = ({ updateContact, updateImage }) => {
       </div>
 
       <form style={{ display: 'none' }}>
-        <input type="file" ref={inputRef} onChange={(event) => updateContactPhoto(event.target.files[0])} name='file' accept='image/*' />
+        <input type="file" ref={inputRef} onChange={(event) => updatePhoto(event.target.files[0])} name='file' accept='image/*' />
       </form>
     </>
   )

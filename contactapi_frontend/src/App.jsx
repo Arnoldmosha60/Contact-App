@@ -5,6 +5,9 @@ import { getContacts, saveContact, updateContact, updatePhoto } from "./api/Cont
 import { Navigate, Route, Routes } from "react-router-dom";
 import ContactList from "./components/ContactList";
 import ContactDetail from "./components/ContactDetail";
+import { toastError, toastSuccess } from "./api/ToastService";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [data, setData] = useState({});
@@ -24,6 +27,7 @@ function App() {
       console.log(data);
     } catch (error) {
       console.log(error);
+      toastError(error.message);
     }
   }
 
@@ -46,10 +50,19 @@ function App() {
       toggleModal(false);
       setFile(undefined);
       fileRef.current.value = null;
-      setValues({ name: "", email: "", phone: "", address: "", title: "", status: "", });
+      setValues({
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        title: '',
+        status: '',
+      })
       getAllContacts();
+      toastSuccess("Contact Added");
     } catch (error) {
       console.log(error);
+      toastError(error.message);
     }
   };
 
@@ -59,16 +72,15 @@ function App() {
       console.log(data);
     } catch (error) {
       console.log(error);
-      // eslint-disable-next-line no-undef
       toastError(error.message);
     }
    };
+
   const updateImage = async (formData) => {
     try {
       const { data: photoUrl } = await updatePhoto(formData);
     } catch (error) {
       console.log(error);
-      // eslint-disable-next-line no-undef
       toastError(error.message);
     }
    };
@@ -135,7 +147,7 @@ function App() {
           </form>
         </div>
       </dialog>
-
+      <ToastContainer /> 
     </>
   )
 }
